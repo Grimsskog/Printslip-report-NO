@@ -25,18 +25,30 @@
         .error {
             color: red;
         }
-
+        #startom{
+            display:none;
+        }
+        #hode{
+            display:block;
+        }
+        #tabell{
+            display:none;
+        }
+    
     </style>
 </head>
+<body><div id="hode">
 <center><u><h2>Printslip-report XML behandler</h2></u></center>
     <h2>Last opp XML-fil</h2>
 
     <input type="file" id="xmlFileInput" accept=".xml" onchange="handleFileSelect(event)">
     
     <div id="status"></div>
-
-
+</div>
+<button id="startom" onclick="restart()">Start på nytt</button>
+<div id="tabell">
     <center><h2>Hente-på-hylla liste</h2></center>
+
     <table id="dataTable">
         <thead>
             <tr><th>Nr</th>
@@ -48,20 +60,20 @@
             </tr>
         </thead>
         <tbody id="tableBody">
-            <!-- Data rows will be inserted here by JavaScript -->
+
         </tbody>
     </table>
-
+</div>
     <script>
         function handleFileSelect(event) {
-            document.getElementById('tabell').style.display:'block';
-            document.getElementById('hode').style.display:'none';
-            document.getElementById('restart').style.display:'block';
+            document.getElementById('tabell').style.display = 'block';
+            document.getElementById('hode').style.display = 'none';
+            document.getElementById('startom').style.display ='block';
 
             const fileInput = event.target;
             const file = fileInput.files[0];
             const statusDiv = document.getElementById('status');
-            statusDiv.textContent = ''; // Clear previous status
+            statusDiv.textContent = ''; 
 
             if (!file) {
                 statusDiv.textContent = 'Velg en XML fil.';
@@ -69,29 +81,31 @@
                 return;
             }
 
-
+     
             const reader = new FileReader();
 
-
+       
             reader.onload = function(e) {
                 const xmlText = e.target.result;
                 parseAndDisplayXML(xmlText);
             };
 
-
+     
             reader.onerror = function() {
                 statusDiv.textContent = 'Klarte ikke lese fila';
                 statusDiv.classList.add('error');
             };
 
+ 
             reader.readAsText(file);
         }
 
         function parseAndDisplayXML(xmlString) {
             const parser = new DOMParser();
-
+    
             const xmlDoc = parser.parseFromString(xmlString, "application/xml");
 
+ 
             const errorNode = xmlDoc.querySelector("parsererror");
             if (errorNode) {
                 document.getElementById('status').textContent = 'Klarer ikke parse XML fil: ' + errorNode.textContent;
@@ -99,9 +113,9 @@
                 return;
             }
 
+
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = ''; 
-
 
             const requests = xmlDoc.getElementsByTagName("Request");
             console.log(requests)
@@ -115,7 +129,7 @@
                 const note = request.getElementsByTagName("note")[0].textContent;
                 const nummer = i+1
 
-  
+
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
                     <td>${nummer}</td>
@@ -131,9 +145,15 @@
             
             document.getElementById('status').textContent = `Har klart å laste ${requests.length} request'er.`;
             document.getElementById('status').classList.remove('error');
+          
         }
+             function restart() {
+  
+                    location.reload(); 
+
+                                }
+ 
     </script>
 
 </body>
-
 </html>
