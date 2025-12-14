@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Printslip-report XML behandler</title>
+    <style type="text/css" media="print">
+        .no-print {display: none;
+        }
+
+    </style>
     <style>
+       
         table {
             border-collapse: collapse;
             margin-top: 20px;
@@ -26,28 +32,70 @@
             color: red;
         }
         #startom{
+            float:left;
+            margin-right: 10px;
+            margin-left:5px;
+            /*display:none;*/
+        } 
+         #printerbutton{
+            margin-left: 30px;
+            float: left;
+         }
+         .knapp {
+            font-size: medium;
+         }
+
+
+        #infoboks{
             display:none;
+            width: fit-content;
+            float: left;
+            padding-left: 20%;
+            margin-bottom: 10px;
+            
+            
         }
+
         #hode{
             display:block;
+            margin-top: 5%;
         }
         #tabell{
             display:none;
+            
+        }
+        #tabelloverskrift{
+            float:center;
+            
+ display:none;
+            padding-left: 30%; 
+            padding-right:30%;
+        }
+        .knapp:hover {
+box-shadow: 0 1px 2px 0 rgba(0,0,0,0.6);
+text-decoration: underline;
         }
     
     </style>
 </head>
 <body><center><div id="hode">
-<center><u><h2>Printslip-report XML fremviser</h2></u></center><br><br>
+<center><u><h2>Printslip-report XML behandler</h2></u></center>
     <h3>  
-<label for="xmlFileInput">Last opp XML-fil:  </label>
-    <input type="file" id="xmlFileInput" accept=".xml" onchange="handleFileSelect(event)" >
+    <label for="xmlFileInput">Last opp XML-fil: </label>
+
+    <input type="file" id="xmlFileInput" accept=".xml" onchange="handleFileSelect(event)">
+    
     </h3>
-    <div id="status"></div>
-</div></center>
-<button id="startom" onclick="restart()">Start på nytt</button>
+
+</div></center><div class="no-print">
+    <div id="infoboks" class="no-print">
+        <div id="status" class="no-print"></div><br>
+        <button id="startom" onclick="restart()" class="no-print knapp">Start på nytt</button>
+        <button id="printerbutton" onclick="window.print()"  class="no-print knapp">Skriv ut</button>
+    
+    </div></div><br>
+    <center><h2 id="tabelloverskrift" >Hente-på-hylla liste</h2></center>
 <div id="tabell">
-    <center><h2>Hente-på-hylla liste</h2></center>
 
     <table id="dataTable">
         <thead>
@@ -68,8 +116,9 @@
     <script>
         function handleFileSelect(event) {
             document.getElementById('tabell').style.display = 'block';
+            document.getElementById('tabelloverskrift').style.display ='block';
             document.getElementById('hode').style.display = 'none';
-            document.getElementById('startom').style.display ='block';
+            document.getElementById('infoboks').style.display ='block';
 
             const fileInput = event.target;
             const file = fileInput.files[0];
@@ -177,3 +226,4 @@
 </body>
 
 </html>
+
