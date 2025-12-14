@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Printslip-report XML table-maker</title>
+    <style type="text/css" media="print">
+        .no-print {display: none;
+        }
+
+    </style>
     <style>
+       
         table {
             border-collapse: collapse;
             margin-top: 20px;
@@ -26,29 +32,71 @@
             color: red;
         }
         #startom{
+            float:left;
+            margin-right: 10px;
+            margin-left:5px;
+            /*display:none;*/
+        } 
+         #printerbutton{
+            margin-left: 30px;
+            float: left;
+         }
+         .knapp {
+            font-size: medium;
+         }
+
+
+        #infoboks{
             display:none;
+            width: fit-content;
+            float: left;
+            padding-left: 20%;
+            margin-bottom: 10px;
+            
+            
         }
+
         #hode{
             display:block;
+            margin-top: 5%;
         }
         #tabell{
             display:none;
+            
+        }
+        #tabelloverskrift{
+            float:center;
+            
+ display:none;
+            padding-left: 30%; 
+            padding-right:30%;
+        }
+        .knapp:hover {
+box-shadow: 0 1px 2px 0 rgba(0,0,0,0.6);
+text-decoration: underline;
         }
     
     </style>
 </head>
-<body><div id="hode">
+<body><center><div id="hode">
 <center><u><h2>Printslip-report XML table-maker</h2></u></center>
-    <h2>Upload XML-file</h2>
+    <h3>  
+    <label for="xmlFileInput">Upload XML-file</label>
 
     <input type="file" id="xmlFileInput" accept=".xml" onchange="handleFileSelect(event)">
     
-    <div id="status"></div>
-</div>
-<button id="startom" onclick="restart()">Restart</button>
-<div id="tabell">
-    <center><h2>Pick up from shelf list</h2></center>
+    </h3>
 
+</div></center><div class="no-print">
+    <div id="infoboks" class="no-print">
+        <div id="status" class="no-print"></div><br>
+        <button id="startom" onclick="restart()" class="no-print knapp">Restart</button>
+        <button id="printerbutton" onclick="window.print()"  class="no-print knapp">Print table</button>
+    
+    </div><br></div>
+    <center><h2 id="tabelloverskrift" > Pick up from shelf list</h2></center>
+<div id="tabell">
+    
     <table id="dataTable">
         <thead>
             <tr><th>No.</th>
@@ -56,6 +104,7 @@
                 <th>Call number</th>
                 <th>Title</th>
                 <th>Barcode</th>
+                <th>Destination</th>
                 <th>Request note</th>
             </tr>
         </thead>
@@ -67,8 +116,9 @@
     <script>
         function handleFileSelect(event) {
             document.getElementById('tabell').style.display = 'block';
+            document.getElementById('tabelloverskrift').style.display = 'block';
             document.getElementById('hode').style.display = 'none';
-            document.getElementById('startom').style.display ='block';
+            document.getElementById('infoboks').style.display ='block';
 
             const fileInput = event.target;
             const file = fileInput.files[0];
@@ -121,26 +171,43 @@
             console.log(requests)
 
             for (let i = 0; i < requests.length; i++) {
-                const request = requests[i];
+               const request = requests[i];
+                const tilBib = request.getElementsByTagName("pickup_at")[0].textContent;
+                const fraBib = request.getElementsByTagName("library")[0].textContent;
                 const holding = request.getElementsByTagName("location")[0].textContent;
                 const tittel = request.getElementsByTagName("title")[0].textContent;
+                const aar = request.getElementsByTagName("publication_date")[0].textContent;
                 const ddk = request.getElementsByTagName("call_number")[0].textContent;
                 const dokid = request.getElementsByTagName("barcode")[0].textContent;
                 const note = request.getElementsByTagName("note")[0].textContent;
                 const nummer = i+1
+                const plass = holding.substring(0,holding.indexOf("("));
 
-
-                const newRow = document.createElement('tr');
+                if (tilBib == fraBib) {
+                    const newRow = document.createElement('tr');
                 newRow.innerHTML = `
                     <td>${nummer}</td>
-                    <td>${holding}</td>
+                    <td>${plass}</td>
                     <td>${ddk}</td>
-                    <td>${tittel}</td>
+                    <td>${tittel+", "+aar}</td>
                     <td>${dokid}</td>
+                    <td>Hold-shelf</td>
                     <td>${note}</td>
                 `;
-
                 tableBody.appendChild(newRow);
+                } else {
+                    const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${nummer}</td>
+                    <td>${plass}</td>
+                    <td>${ddk}</td>
+                    <td>${tittel+", "+aar}</td>
+                    <td>${dokid}</td>
+                    <td>${tilBib}</td>
+                    <td>${note}</td>
+                `;
+                tableBody.appendChild(newRow);
+                };
             }
             
             document.getElementById('status').textContent = `Successfully loaded ${requests.length} requests.`;
@@ -156,4 +223,5 @@
     </script>
 
 </body>
+
 </html>
